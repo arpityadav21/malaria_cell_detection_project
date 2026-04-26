@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CellScan AI — Malaria Detection</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #C8382A;
+    --red-light: #F5EAE8;
+    --red-mid: #E05040;
+    --bg: #0E0D0C;
+    --bg2: #161412;
+    --bg3: #1E1B18;
+    --border: rgba(255,255,255,0.08);
+    --text: #F0EDE8;
+    --muted: #8A8070;
+    --accent: #E8C49A;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Instrument Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 18px 48px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(14,13,12,0.85);
+    backdrop-filter: blur(12px);
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px; font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--red-mid); }
+  .nav-links { display: flex; gap: 32px; }
+  .nav-links a {
+    color: var(--muted); font-size: 13px; text-decoration: none;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    padding: 120px 48px 80px;
+    position: relative; overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -200px; right: -200px;
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(200,56,42,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 11px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--red-mid); margin-bottom: 24px;
+  }
+  .hero-tag::before {
+    content: ''; width: 24px; height: 1px; background: var(--red-mid);
+  }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(42px, 6vw, 80px);
+    font-weight: 800; line-height: 1.05;
+    letter-spacing: -2px; max-width: 800px;
+    margin-bottom: 24px;
+  }
+  h1 em { font-style: normal; color: var(--red-mid); }
+  .hero-sub {
+    font-size: 16px; color: var(--muted); max-width: 480px;
+    line-height: 1.7; margin-bottom: 40px;
+  }
+  .hero-btns { display: flex; gap: 12px; }
+  .btn-primary {
+    background: var(--red-mid); color: white;
+    padding: 12px 24px; border-radius: 6px;
+    font-size: 14px; font-weight: 500;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: var(--red); transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent; color: var(--text);
+    padding: 12px 24px; border-radius: 6px;
+    font-size: 14px; font-weight: 500;
+    text-decoration: none; border: 1px solid var(--border); cursor: pointer;
+    transition: border-color 0.2s, transform 0.15s;
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,0.25); transform: translateY(-1px); }
+
+  /* STATS BAR */
+  .stats-bar {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 0 48px;
+  }
+  .stat-item {
+    padding: 32px 40px;
+    border-right: 1px solid var(--border);
+  }
+  .stat-item:last-child { border-right: none; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px; font-weight: 800; letter-spacing: -1px;
+    color: var(--text);
+  }
+  .stat-num span { color: var(--red-mid); }
+  .stat-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+  /* SECTIONS */
+  section { padding: 80px 48px; }
+  .section-label {
+    font-size: 11px; font-weight: 500; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--red-mid);
+    margin-bottom: 16px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::before { content: ''; width: 16px; height: 1px; background: var(--red-mid); }
+  h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 3.5vw, 44px);
+    font-weight: 700; letter-spacing: -1px;
+    margin-bottom: 16px; line-height: 1.1;
+  }
+
+  /* DEMO SECTION */
+  .demo-section { background: var(--bg2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .demo-inner { max-width: 1100px; margin: 0 auto; }
+  .demo-header { margin-bottom: 32px; }
+  .demo-header p { color: var(--muted); font-size: 15px; max-width: 500px; line-height: 1.7; }
+  .gradio-wrap {
+    border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+    background: var(--bg3);
+  }
+  .gradio-wrap iframe {
+    width: 100%; height: 600px; border: none; display: block;
+  }
+
+  /* ARCHITECTURE */
+  .arch-section { border-bottom: 1px solid var(--border); }
+  .arch-inner { max-width: 1100px; margin: 0 auto; }
+  .arch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; margin-top: 48px; }
+  .arch-desc { color: var(--muted); font-size: 15px; line-height: 1.8; }
+  .arch-desc p { margin-bottom: 16px; }
+  .arch-desc strong { color: var(--text); font-weight: 500; }
+  .pipeline {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .pipe-step {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; font-size: 13px;
+    transition: border-color 0.2s;
+  }
+  .pipe-step:hover { border-color: rgba(200,56,42,0.4); }
+  .pipe-num {
+    width: 24px; height: 24px; border-radius: 50%;
+    background: rgba(200,56,42,0.15); color: var(--red-mid);
+    font-size: 11px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .pipe-name { font-weight: 500; color: var(--text); flex: 1; }
+  .pipe-detail { font-size: 11px; color: var(--muted); }
+  .pipe-connector {
+    width: 1px; height: 8px; background: var(--border);
+    margin-left: 27px;
+  }
+  .highlight-box {
+    margin-top: 24px; padding: 20px;
+    background: rgba(200,56,42,0.06);
+    border: 1px solid rgba(200,56,42,0.2);
+    border-radius: 8px;
+  }
+  .highlight-box .label { font-size: 11px; color: var(--red-mid); letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .highlight-box p { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* CHATBOT */
+  .chat-section { background: var(--bg2); border-bottom: 1px solid var(--border); }
+  .chat-inner { max-width: 780px; margin: 0 auto; }
+  .chat-header-desc { color: var(--muted); font-size: 15px; line-height: 1.7; margin-bottom: 32px; }
+  .chatbox {
+    border: 1px solid var(--border); border-radius: 12px;
+    overflow: hidden; background: var(--bg3);
+  }
+  .chatbox-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 13px; font-weight: 500;
+  }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #4CAF7D; flex-shrink: 0; }
+  .chat-messages {
+    height: 360px; overflow-y: auto; padding: 20px;
+    display: flex; flex-direction: column; gap: 12px;
+    scroll-behavior: smooth;
+  }
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-track { background: transparent; }
+  .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+  .msg {
+    max-width: 80%; font-size: 14px; line-height: 1.6;
+    padding: 10px 14px; border-radius: 10px; animation: fadeUp 0.3s ease;
+  }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .msg-ai { background: var(--bg2); border: 1px solid var(--border); align-self: flex-start; color: var(--text); border-radius: 2px 10px 10px 10px; }
+  .msg-user { background: var(--red-mid); color: white; align-self: flex-end; border-radius: 10px 2px 10px 10px; }
+  .msg-loading { opacity: 0.6; }
+  .typing-dots span {
+    display: inline-block; width: 5px; height: 5px;
+    background: var(--muted); border-radius: 50%; margin: 0 2px;
+    animation: bounce 1.2s infinite;
+  }
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+  .chat-input-row {
+    display: flex; border-top: 1px solid var(--border);
+  }
+  .chat-input-row input {
+    flex: 1; background: transparent; border: none; outline: none;
+    padding: 14px 18px; font-size: 14px; color: var(--text);
+    font-family: 'Instrument Sans', sans-serif;
+  }
+  .chat-input-row input::placeholder { color: var(--muted); }
+  .chat-send {
+    padding: 14px 20px; background: transparent; border: none;
+    border-left: 1px solid var(--border);
+    color: var(--red-mid); cursor: pointer; font-size: 16px;
+    transition: background 0.2s;
+  }
+  .chat-send:hover { background: rgba(200,56,42,0.08); }
+  .suggested-qs {
+    display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px;
+  }
+  .sq {
+    font-size: 12px; padding: 6px 12px;
+    border: 1px solid var(--border); border-radius: 99px;
+    color: var(--muted); cursor: pointer; background: transparent;
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .sq:hover { border-color: var(--red-mid); color: var(--text); }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 48px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  footer .logo { font-size: 15px; }
+  footer p { font-size: 13px; color: var(--muted); }
+  footer a { color: var(--muted); text-decoration: none; }
+  footer a:hover { color: var(--text); }
+
+  /* FADE IN ANIMATION */
+  .fade-in { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 768px) {
+    nav { padding: 16px 20px; }
+    .nav-links { display: none; }
+    .hero { padding: 100px 20px 60px; }
+    .stats-bar { grid-template-columns: 1fr; margin: 0 20px; }
+    .stat-item { border-right: none; border-bottom: 1px solid var(--border); padding: 24px 20px; }
+    section { padding: 60px 20px; }
+    .arch-grid { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 12px; text-align: center; padding: 32px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="logo">Cell<span>Scan</span> AI</div>
+  <div class="nav-links">
+    <a href="#demo">Live Demo</a>
+    <a href="#model">Model</a>
+    <a href="#chat">Ask AI</a>
+    <a href="https://huggingface.co/spaces/prophylaxis77/malaria-detector" target="_blank">HF Space ↗</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-tag">CNN · ResNet18 · PyTorch</div>
+  <h1>Detect <em>malaria</em><br>in blood cells<br>instantly.</h1>
+  <p class="hero-sub">Upload a microscopy image of a blood cell. Our fine-tuned ResNet18 model classifies it as parasitized or uninfected with over 96% accuracy.</p>
+  <div class="hero-btns">
+    <a href="#demo" class="btn-primary">Try the detector</a>
+    <a href="#model" class="btn-ghost">How it works</a>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-bar fade-in">
+  <div class="stat-item">
+    <div class="stat-num">96<span>%+</span></div>
+    <div class="stat-label">Validation accuracy</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">27<span>K</span></div>
+    <div class="stat-label">Training images (NIH dataset)</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-num">&lt;1<span>s</span></div>
+    <div class="stat-label">Inference time per image</div>
+  </div>
+</div>
+
+<!-- DEMO -->
+<section class="demo-section" id="demo">
+  <div class="demo-inner">
+    <div class="demo-header fade-in">
+      <div class="section-label">Live Demo</div>
+      <h2>Upload a cell image</h2>
+      <p>Drop any blood cell microscopy image below. The model will return a prediction with confidence scores for both classes.</p>
+    </div>
+    <div class="gradio-wrap fade-in">
+      <iframe src="https://prophylaxis77-malaria-detector.hf.space" title="Malaria Detector Demo"></iframe>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section class="arch-section" id="model">
+  <div class="arch-inner">
+    <div class="section-label fade-in">Model Architecture</div>
+    <h2 class="fade-in">ResNet18, fine-tuned<br>for binary classification</h2>
+    <div class="arch-grid">
+      <div class="arch-desc fade-in">
+        <p>The model is a <strong>pretrained ResNet18</strong> (ImageNet weights) with its final fully-connected layer replaced by a 2-class linear layer — one for Parasitized, one for Uninfected.</p>
+        <p>Images are resized to <strong>224×224</strong> and normalized using ImageNet statistics. Training used <strong>data augmentation</strong> (random flips, rotations) to improve generalization.</p>
+        <p>Training was done using <strong>Adam optimizer</strong> with cross-entropy loss over 10 epochs on the NIH Malaria Cell Images dataset, with the best checkpoint saved based on validation accuracy.</p>
+        <div class="highlight-box">
+          <div class="label">Dataset</div>
+          <p>NIH Cell Images Dataset — 27,558 images split 70/15/15 into train, validation, and test sets. Equal balance of Parasitized and Uninfected cells.</p>
+        </div>
+      </div>
+      <div class="pipeline fade-in">
+        <div class="pipe-step">
+          <div class="pipe-num">1</div>
+          <div class="pipe-name">Input Image</div>
+          <div class="pipe-detail">Any size RGB</div>
+        </div>
+        <div class="pipe-connector"></div>
+        <div class="pipe-step">
+          <div class="pipe-num">2</div>
+          <div class="pipe-name">Resize + Normalize</div>
+          <div class="pipe-detail">224×224, ImageNet stats</div>
+        </div>
+        <div class="pipe-connector"></div>
+        <div class="pipe-step">
+          <div class="pipe-num">3</div>
+          <div class="pipe-name">ResNet18 Backbone</div>
+          <div class="pipe-detail">Pretrained on ImageNet</div>
+        </div>
+        <div class="pipe-connector"></div>
+        <div class="pipe-step">
+          <div class="pipe-num">4</div>
+          <div class="pipe-name">Custom FC Layer</div>
+          <div class="pipe-detail">512 → 2 classes</div>
+        </div>
+        <div class="pipe-connector"></div>
+        <div class="pipe-step">
+          <div class="pipe-num">5</div>
+          <div class="pipe-name">Softmax Output</div>
+          <div class="pipe-detail">Parasitized / Uninfected</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CHATBOT -->
+<section class="chat-section" id="chat">
+  <div class="chat-inner">
+    <div class="section-label fade-in">AI Assistant</div>
+    <h2 class="fade-in">Ask anything about the model</h2>
+    <p class="chat-header-desc fade-in">Have questions about how it works, the dataset, limitations, or results? Ask below.</p>
+
+    <div class="chatbox fade-in">
+      <div class="chatbox-header">
+        <div class="status-dot"></div>
+        CellScan Assistant
+      </div>
+      <div class="chat-messages" id="chatMessages">
+        <div class="msg msg-ai">Hi! I can answer questions about this malaria detection model — the architecture, dataset, training process, limitations, or results. What would you like to know?</div>
+      </div>
+      <div class="chat-input-row">
+        <input type="text" id="chatInput" placeholder="Ask a question..." />
+        <button class="chat-send" id="sendBtn">↑</button>
+      </div>
+    </div>
+
+    <div class="suggested-qs">
+      <button class="sq" onclick="askQuestion('What dataset was used to train this model?')">What dataset was used?</button>
+      <button class="sq" onclick="askQuestion('What is the test accuracy of the model?')">What is the accuracy?</button>
+      <button class="sq" onclick="askQuestion('What are the limitations of this model?')">What are the limitations?</button>
+      <button class="sq" onclick="askQuestion('How does ResNet18 work?')">How does ResNet18 work?</button>
+      <button class="sq" onclick="askQuestion('What is transfer learning and why was it used here?')">Why transfer learning?</button>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="logo">Cell<span>Scan</span> AI</div>
+  <p>Built with PyTorch · ResNet18 · Gradio · NIH Dataset</p>
+  <a href="https://huggingface.co/spaces/prophylaxis77/malaria-detector" target="_blank">View on Hugging Face ↗</a>
+</footer>
+
+<script>
+const BACKEND_URL = 'https://divanshi22-ai-project.hf.space';
+
+async function sendMessage(text) {
+  if (!text.trim()) return;
+  addMsg(text, 'user');
+  document.getElementById('chatInput').value = '';
+  const loadingId = addLoading();
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text })
+    });
+    const data = await res.json();
+    removeLoading(loadingId);
+    addMsg(data.reply || 'Sorry, try again.', 'ai');
+  } catch (e) {
+    removeLoading(loadingId);
+    addMsg('Could not reach the server. Please try again.', 'ai');
+  }
+}
+
+function addMsg(text, type) {
+  const div = document.createElement('div');
+  div.className = `msg msg-${type}`;
+  div.textContent = text;
+  const box = document.getElementById('chatMessages');
+  box.appendChild(div);
+  box.scrollTop = box.scrollHeight;
+}
+
+function addLoading() {
+  const id = 'loading-' + Date.now();
+  const div = document.createElement('div');
+  div.className = 'msg msg-ai msg-loading';
+  div.id = id;
+  div.innerHTML = '<span class="typing-dots"><span></span><span></span><span></span></span>';
+  document.getElementById('chatMessages').appendChild(div);
+  return id;
+}
+
+function removeLoading(id) {
+  const el = document.getElementById(id);
+  if (el) el.remove();
+}
+
+function askQuestion(q) { sendMessage(q); }
+
+document.getElementById('sendBtn').addEventListener('click', () => sendMessage(document.getElementById('chatInput').value));
+document.getElementById('chatInput').addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(e.target.value); });
+
+const observer = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }), { threshold: 0.1 });
+document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
