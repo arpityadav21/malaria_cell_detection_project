@@ -1,8 +1,8 @@
-# 🦟 Malaria Cell Detection using Deep Learning
+# 🦟 MalariaNet — AI Blood Cell Detection
 
 A deep learning web app that detects malaria-infected blood cells from microscopic images using a fine-tuned ResNet18 Convolutional Neural Network — with a built-in AI assistant powered by LLaMA 3.1.
 
-## 🔗 Live Links
+## 🔗 Live Demo
 
 - 🌐 **Live Demo:** [malaria-cell-detection-project.vercel.app](https://malaria-cell-detection-project.vercel.app/)
 
@@ -20,8 +20,7 @@ A deep learning web app that detects malaria-infected blood cells from microscop
 - ResNet18 model fine-tuned using Transfer Learning on NIH dataset
 - ~96.78% validation accuracy
 - FastAPI backend for model inference
-- Built-in **CellScan AI Chatbot** powered by LLaMA 3.1 via HuggingFace Router
-- Deployed on Vercel 
+- Built-in **MalariaNet AI Chatbot** powered by LLaMA 3.1 via HuggingFace Router
 
 ## 🛠️ Tech Stack
 
@@ -42,7 +41,7 @@ A deep learning web app that detects malaria-infected blood cells from microscop
 ## 📁 Project Structure
 
 ```
-malaria-cell-detection/
+malaria-detection/
 ├── model_code.ipynb        # CNN training, evaluation, and results
 ├── chatbotapi.py           # FastAPI backend for inference + AI chatbot
 ├── index.html              # Frontend interface
@@ -60,11 +59,9 @@ malaria-cell-detection/
 
 ## 🚀 Getting Started
 
-### Backend (FastAPI)
-
 ```bash
-git clone https://github.com/arpityadav21/malaria-cell-detection.git
-cd malaria-cell-detection
+git clone https://github.com/arpityadav21/malaria-detection.git
+cd malaria-detection
 pip install -r requirements.txt
 ```
 
@@ -78,11 +75,7 @@ Run the API:
 uvicorn chatbotapi:app --reload
 ```
 
-API will run on http://127.0.0.1:8000
-
-### Frontend
-
-Open `index.html` directly in your browser or serve it with any static server.
+Then open `index.html` in your browser.
 
 > **Dataset:** Download from [NIH Malaria Cell Images on Kaggle](https://www.kaggle.com/datasets/iarunava/cell-images-for-detecting-malaria)
 
@@ -92,7 +85,7 @@ Open `index.html` directly in your browser or serve it with any static server.
 2. Image is sent to the FastAPI backend
 3. ResNet18 model preprocesses and classifies the image
 4. Result returned as **Parasitized** or **Uninfected** with confidence score
-5. User can also chat with the CellScan AI assistant for project-related queries
+5. User can also chat with the MalariaNet AI assistant for project-related queries
 
 ## 👨‍💻 Author
 
