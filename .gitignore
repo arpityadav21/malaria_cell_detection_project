@@ -1,7 +1,4 @@
 dataset/
-*.png
-*.jpg
-*.jpeg
 __pycache__/
 *.pyc
 .env
