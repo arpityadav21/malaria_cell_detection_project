@@ -4,8 +4,7 @@ A deep learning web app that detects malaria-infected blood cells from microscop
 
 ## 🔗 Live Links
 
-- 🌐 **Live Demo:** [malaria-detector-omega.vercel.app](https://malaria-detector-omega.vercel.app)
-- 🤗 **HuggingFace Space:** [prophylaxis77/malaria-detector](https://huggingface.co/spaces/prophylaxis77/malaria-detector)
+- 🌐 **Live Demo:** [malaria-cell-detection-project.vercel.app](https://malaria-cell-detection-project.vercel.app/)
 
 ## 📸 Screenshots
 
@@ -22,7 +21,7 @@ A deep learning web app that detects malaria-infected blood cells from microscop
 - ~96.78% validation accuracy
 - FastAPI backend for model inference
 - Built-in **CellScan AI Chatbot** powered by LLaMA 3.1 via HuggingFace Router
-- Deployed on Vercel and HuggingFace Spaces
+- Deployed on Vercel 
 
 ## 🛠️ Tech Stack
 
